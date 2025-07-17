@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Барбершоп</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+</head>
+<body>
+    <h1>Добро пожаловать в наш барбершоп!</h1>
+    
+    <h2>Наши мастера:</h2>
+    <ul>
+        {% for master in masters %}
+        <li>{{ master.name }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Наши услуги:</h2>
+    <ul>
+        {% for service in services %}
+        <li>{{ service }}</li>
+        {% endfor %}
+    </ul>
+    
+    <script src="{% static 'main.js' %}"></script>
+</body>
+</html>

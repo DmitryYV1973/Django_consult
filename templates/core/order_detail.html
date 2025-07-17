@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Заявка #{{ order.id }}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+</head>
+<body>
+    <h1>Заявка #{{ order.id }}</h1>
+    <p><strong>Клиент:</strong> {{ order.client_name }}</p>
+    <p><strong>Мастер:</strong> {{ master.name }}</p>
+    <p><strong>Дата:</strong> {{ order.date }}</p>
+    <p><strong>Статус:</strong> {{ order.status }}</p>
+    
+    <h2>Услуги:</h2>
+    <ul>
+        {% for service in order.services %}
+        <li>{{ service }}</li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{% url 'orders_list' %}">Вернуться к списку заявок</a>
+    <script src="{% static 'main.js' %}"></script>
+</body>
+</html>

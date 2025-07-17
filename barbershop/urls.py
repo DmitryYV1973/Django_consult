@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.urls import path
-from core.views import main, masters_detail, thanks
+from core.views import main
+from django.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main),
-    path('masters/<int:master_id>/', masters_detail),
-    path('thanks/', thanks),
+    path('barbershop/', include('core.urls')),
 ]

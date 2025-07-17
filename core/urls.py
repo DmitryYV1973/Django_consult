@@ -1,7 +1,9 @@
 from django.urls import path
-from core.views import masters_detail, thanks
+from . import views
 
 urlpatterns = [
-    path('masters/<int:master_id>/', masters_detail),
-    path('thanks/', thanks),
+    path('', views.landing, name='landing'),
+    path('thanks/', views.thanks, name='thanks'),
+    path('orders/', views.orders_list, name='orders_list'),
+    path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
 ]

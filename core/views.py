@@ -24,4 +24,9 @@ def masters_detail(request, master_id):
         
 
 def thanks(request):
-    return render(request, 'thanks.html')
+    masters_count = len(masters)
+    
+    context = {
+        'masters_count': masters_count,
+    }
+    return render(request, 'thanks.html', context)

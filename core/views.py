@@ -23,3 +23,5 @@ def masters_detail(request, master_id):
     return HttpResponse(f"<h1>{master['name']}</h1>")
         
 
+def thanks(request):
+    return render(request, 'thanks.html')

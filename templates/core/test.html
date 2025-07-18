@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тестовый шаблон</title>
+</head>
+<body>
+    <h1>{{ string }}</h1>
+    
+    <h2>Основная информация:</h2>
+    <p>Номер: {{ number }}</p>
+    <p>Дата: {{ current_date }}</p>
+    <p>Активно: {{ is_active|yesno:"Да,Нет" }}</p>
+    
+    <h2>Услуги:</h2>
+    <ul>
+        {% for service in list_ %}
+        <li>{{ service }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Детали услуги:</h2>
+    <p>Название: {{ dict_.service }}</p>
+    <p>Цена: {{ dict_.price }} руб.</p>
+    
+    <h2>Премиум услуга:</h2>
+    <p>{{ class_.name }} ({{ class_.price }} руб.)</p>
+    <p>Длительность: {{ class_.get_duration }}</p>
+    
+    <h2>Акция:</h2>
+    <h3>{{ special_offers.title }}</h3>
+    <p>{{ special_offers.description }}</p>
+</body>
+</html>

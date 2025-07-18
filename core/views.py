@@ -31,3 +31,7 @@ def order_detail(request, order_id):
         'master': master
     }
     return render(request, 'core/order_detail.html', context)
+
+
+def test(request):
+    return render(request, 'core/test.html', TEST_CONTEXT)

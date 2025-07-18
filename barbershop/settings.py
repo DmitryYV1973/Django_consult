@@ -124,6 +124,7 @@ USE_TZ = True
 # Настраиваем статику
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Для загрузки изображений
 MEDIA_URL = '/media/'

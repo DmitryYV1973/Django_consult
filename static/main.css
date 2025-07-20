@@ -40,3 +40,16 @@
   padding: 0.35em 0.65em;
   font-size: 0.75em;
 }
+
+/* Стили для формы */
+.needs-validation .form-control:invalid {
+    border-color: #dc3545;
+}
+.invalid-feedback {
+    color: #dc3545;
+}
+
+/* Уведомления */
+.alert-success {
+    font-size: 1.2rem;
+}

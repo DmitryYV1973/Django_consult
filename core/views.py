@@ -8,27 +8,31 @@ def landing(request):
     services = Service.objects.all()
     masters = Master.objects.filter(is_active=True)
     published_reviews = Review.objects.filter(is_published=True)
-    
+    success = False  # Флаг для уведомления об успешной отправке
+
+    form = ReviewForm()  # Инициализируем форму отзыва
+    order_form = OrderForm()  # Инициализируем форму заказа
+
     if request.method == "POST":
         if "submit_review" in request.POST:
             form = ReviewForm(request.POST, request.FILES)
             if form.is_valid():
                 review = form.save(commit=False)
                 review.master_id = request.POST.get("master_id")
-                review.is_published = False  # Отзывы публикуются вручную
+                review.is_published = False
                 review.save()
                 return redirect('landing')
         elif "submit_order" in request.POST:
-            form = OrderForm(request.POST)
-            if form.is_valid():
-                order = form.save(commit=False)
-                order.status = 'not_approved'  # Устанавливаем статус "Не подтверждён"
+            order_form = OrderForm(request.POST)  # Переопределяем форму заказа с данными из POST
+            if order_form.is_valid():
+                order = order_form.save(commit=False)
+                order.status = 'not_approved'
                 order.save()
-                form.save_m2m()  # Сохраняем ManyToMany поля (services)
-                return redirect('thanks')
-    else:
-        form = ReviewForm()
-        order_form = OrderForm()
+                order_form.save_m2m()
+                success = True  # Устанавливаем флаг в True при успешной отправке
+            else:
+                # Форма невалидна, обрабатываем ошибки
+                pass
 
     context = {
         'services': services,
@@ -36,6 +40,7 @@ def landing(request):
         'reviews': published_reviews,
         'form': form,
         'order_form': order_form,
+        'success': success,  # Передаем флаг в контекст
     }
     return render(request, 'landing.html', context)
 

@@ -1,56 +1,9 @@
-<!-- Вставьте этот код в ваш шаблон landing.html -->
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
-<!-- Секция "О нас" -->
-<section id="about" class="py-5" style="background-color: #f8f9fa;">
-  <div class="container">
-    <div class="row align-items-center">
-      <!-- Текст слева -->
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <h2 class="display-4 mb-4" style="color: #343a40;">О нашем барбершопе</h2>
-        <div class="border-start border-3 border-warning ps-3">
-          <p class="lead mb-4" style="color: #495057;">
-            "Стальная Борода" - это не просто барбершоп, это место, где рождается стиль. 
-            Мы работаем с 2010 года, создавая уникальные образы для наших клиентов.
-          </p>
-          <p style="color: #6c757d;">
-            Наши мастера - настоящие профессионалы с опытом от 5 лет. Мы используем 
-            только профессиональные инструменты и косметику премиум-класса. 
-            У нас вы получите не просто стрижку, а полноценный уход за бородой и волосами.
-          </p>
-          <div class="d-flex mt-4">
-            <div class="pe-4">
-              <h3 class="text-warning">10+</h3>
-              <p>Лет опыта</p>
-            </div>
-            <div class="pe-4">
-              <h3 class="text-warning">5000+</h3>
-              <p>Довольных клиентов</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Изображение справа -->
-      <div class="col-lg-6">
-        <div class="position-relative">
-          <img src="{% static 'img/about-us.jpg' %}" 
-               class="img-fluid rounded shadow-lg" 
-               alt="Интерьер барбершопа"
-               style="transform: rotate(2deg);">
-          <div class="position-absolute bottom-0 start-0 bg-warning text-dark p-3 rounded shadow-sm"
-               style="transform: translate(-20px, 20px);">
-            <h5 class="mb-0">С 2010 года</h5>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- Секция "Услуги" -->
+<!--Услуги-->
 <section id="services" class="py-5 bg-light">
   <div class="container">
     <div class="text-center mb-5">
@@ -59,26 +12,30 @@
     </div>
 
     <div class="row g-4">
-      <!-- Карточка услуги - пример для одной услуги -->
+      {% for service in services %}
       <div class="col-md-6 col-lg-4">
         <div class="card h-100 border-0 shadow-sm service-card">
+          {% if service.image %}
           <div class="card-img-top overflow-hidden">
-            <img src="{% static 'img/services/haircut.jpg' %}" 
+            <img src="{{ service.image.url }}" 
                  class="img-fluid zoom-img" 
-                 alt="Мужская стрижка">
+                 alt="{{ service.name }}">
           </div>
+          {% endif %}
+          
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start">
-              <h3 class="h5 mb-3">Мужская стрижка</h3>
+              <h3 class="h5 mb-3">{{ service.name }}</h3>
+              {% if service.is_popular %}
               <span class="badge bg-warning text-dark">Хит</span>
+              {% endif %}
             </div>
-            <p class="card-text text-muted mb-4">
-              Профессиональная стрижка с учетом особенностей волос и формы головы. 
-              Включает мытье головы и укладку.
-            </p>
+            <p class="card-text text-muted mb-4">{{ service.description }}</p>
             <div class="d-flex justify-content-between align-items-center">
-              <span class="h5 text-dark mb-0">2 500 ₽</span>
-              <span class="text-muted small"><i class="bi bi-clock"></i> 60 мин</span>
+              <span class="h5 text-dark mb-0">{{ service.price }} ₽</span>
+              <span class="text-muted small">
+                <i class="bi bi-clock"></i> {{ service.duration }} мин
+              </span>
             </div>
           </div>
           <div class="card-footer bg-transparent border-top-0">
@@ -86,67 +43,120 @@
           </div>
         </div>
       </div>
-
-      <!-- Повторите для других услуг, меняя содержимое -->
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 border-0 shadow-sm service-card">
-          <div class="card-img-top overflow-hidden">
-            <img src="{% static 'img/services/beard.jpg' %}" 
-                 class="img-fluid zoom-img" 
-                 alt="Коррекция бороды">
-          </div>
-          <div class="card-body">
-            <h3 class="h5 mb-3">Коррекция бороды</h3>
-            <p class="card-text text-muted mb-4">
-              Точная форма и стиль для вашей бороды с использованием горячих полотенец 
-              и профессиональной косметики.
-            </p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="h5 text-dark mb-0">1 800 ₽</span>
-              <span class="text-muted small"><i class="bi bi-clock"></i> 45 мин</span>
-            </div>
-          </div>
-          <div class="card-footer bg-transparent border-top-0">
-            <a href="#booking" class="btn btn-outline-dark w-100">Записаться</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Еще одна карточка -->
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 border-0 shadow-sm service-card">
-          <div class="card-img-top overflow-hidden">
-            <img src="{% static 'img/services/royal.jpg' %}" 
-                 class="img-fluid zoom-img" 
-                 alt="Королевское бритье">
-          </div>
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-              <h3 class="h5 mb-3">Королевское бритье</h3>
-              <span class="badge bg-danger text-white">New</span>
-            </div>
-            <p class="card-text text-muted mb-4">
-              Традиционное опасное бритье с горячим полотенцем и уходом за кожей. 
-              Для истинных ценителей.
-            </p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="h5 text-dark mb-0">3 200 ₽</span>
-              <span class="text-muted small"><i class="bi bi-clock"></i> 90 мин</span>
-            </div>
-          </div>
-          <div class="card-footer bg-transparent border-top-0">
-            <a href="#booking" class="btn btn-outline-dark w-100">Записаться</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Кнопка "Все услуги" -->
-    <div class="text-center mt-5">
-      <a href="#" class="btn btn-dark px-4 py-2">
-        <i class="bi bi-list-ul me-2"></i>Все услуги
-      </a>
+      {% endfor %}
     </div>
   </div>
+</section>
+
+<!-- Отзывы -->
+<section id="reviews" class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-4">Отзывы</h2>
+      <p class="lead text-muted">Что говорят наши клиенты</p>
+    </div>
+
+    <div class="row g-4">
+      {% for review in reviews %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">{{ review.client_name }}</h5>
+              <span class="text-warning">{{ review.get_rating_display }}</span>
+            </div>
+            <p class="card-text">{{ review.text|linebreaks }}</p>
+            <small class="text-muted">Дата: {{ review.created_at|date:"d.m.Y" }}</small>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Запись -->
+<section id="booking" class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-4">Запись на услугу</h2>
+      <p class="lead text-muted">Оставьте заявку, и мы свяжемся с вами</p>
+    </div>
+
+     <!-- Уведомление об успехе -->
+  {% if success %}
+  <div class="alert alert-success text-center">
+    Спасибо за заявку! Мы свяжемся с вами в ближайшее время.
+  </div>
+  {% else %}
+  <form method="post" action="{% url 'landing' %}" class="needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="id_client_name" class="form-label">Ваше имя</label>
+        {{ order_form.client_name }}
+        {% if order_form.client_name.errors %}
+        <div class="invalid-feedback d-block">
+          {{ order_form.client_name.errors }}
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <label for="id_phone" class="form-label">Телефон</label>
+        {{ order_form.phone }}
+        {% if order_form.phone.errors %}
+        <div class="invalid-feedback d-block">
+          {{ order_form.phone.errors }}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label for="id_master" class="form-label">Выберите мастера</label>
+        {{ order_form.master }}
+        {% if order_form.master.errors %}
+        <div class="invalid-feedback d-block">
+          {{ order_form.master.errors }}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label for="id_appointment_date" class="form-label">Дата и время записи</label>
+        {{ order_form.appointment_date }}
+        {% if order_form.appointment_date.errors %}
+        <div class="invalid-feedback d-block">
+          {{ order_form.appointment_date.errors }}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-12">
+        <label for="id_services" class="form-label">Выберите услуги</label>
+        {{ order_form.services }}
+        {% if order_form.services.errors %}
+        <div class="invalid-feedback d-block">
+          {{ order_form.services.errors }}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-12">
+        <label for="id_comment" class="form-label">Комментарий</label>
+        {{ order_form.comment }}
+        {% if order_form.comment.errors %}
+        <div class="invalid-feedback d-block">
+          {{ order_form.comment.errors }}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-12 text-center">
+        <button type="submit" name="submit_order" class="btn btn-dark btn-lg">Отправить заявку</button>
+      </div>
+    </div>
+  </form>
+  {% endif %}
+</div>
 </section>
 {% endblock %}

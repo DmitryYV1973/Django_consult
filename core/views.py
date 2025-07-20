@@ -1,12 +1,41 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from .models import Review, Service, Master, Order
+from .forms import ReviewForm, OrderForm
 from .data import *
 
 
 def landing(request):
+    services = Service.objects.all()
+    masters = Master.objects.filter(is_active=True)
+    published_reviews = Review.objects.filter(is_published=True)
+    
+    if request.method == "POST":
+        if "submit_review" in request.POST:
+            form = ReviewForm(request.POST, request.FILES)
+            if form.is_valid():
+                review = form.save(commit=False)
+                review.master_id = request.POST.get("master_id")
+                review.is_published = False  # Отзывы публикуются вручную
+                review.save()
+                return redirect('landing')
+        elif "submit_order" in request.POST:
+            form = OrderForm(request.POST)
+            if form.is_valid():
+                order = form.save(commit=False)
+                order.status = 'not_approved'  # Устанавливаем статус "Не подтверждён"
+                order.save()
+                form.save_m2m()  # Сохраняем ManyToMany поля (services)
+                return redirect('thanks')
+    else:
+        form = ReviewForm()
+        order_form = OrderForm()
+
     context = {
+        'services': services,
         'masters': masters,
-        'services': services
+        'reviews': published_reviews,
+        'form': form,
+        'order_form': order_form,
     }
     return render(request, 'landing.html', context)
 

@@ -10,9 +10,9 @@ class MasterAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'duration', 'is_popular')
-    list_filter = ('is_popular',)
-    search_fields = ('name',)
+    list_display = ('name', 'price', 'duration', 'is_popular', 'order')
+    list_editable = ('price', 'order', 'is_popular')
+    search_fields = ('name', 'description')
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

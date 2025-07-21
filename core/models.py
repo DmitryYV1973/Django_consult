@@ -11,6 +11,12 @@ class Service(models.Model):
     order = models.PositiveIntegerField(default=0, verbose_name="Порядок отображения")
     
     class Meta:
+        indexes = [
+            models.Index(fields=['price']),  # Одинарный индекс по цене
+            models.Index(fields=['is_popular']),  # Одинарный индекс по популярности
+            models.Index(fields=['price', 'duration'])  # Составной индекс по цене и продолжительности
+        ]
+        
         verbose_name = "Услуга"
         verbose_name_plural = "Список услуг"
         ordering = ['order', 'name']
@@ -22,7 +28,6 @@ class Master(models.Model):
     name = models.CharField(max_length=150, verbose_name="Имя")
     photo = models.ImageField(upload_to="masters/", blank=True, verbose_name="Фотография")
     phone = models.CharField(max_length=20, verbose_name="Телефон")
-    address = models.CharField(max_length=255, verbose_name="Адрес")
     experience = models.PositiveIntegerField(
         verbose_name="Стаж работы", 
         help_text="Опыт работы в годах"

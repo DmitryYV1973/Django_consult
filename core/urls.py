@@ -1,10 +1,12 @@
+# core/urls.py
+
 from django.urls import path
-from . import views
+from .views import LandingView, ThanksView, OrdersListView, OrderDetailView, service_create_view
 
 urlpatterns = [
-    path('', views.landing, name='landing'),
-    path('thanks/', views.thanks, name='thanks'),
-    path('orders/', views.orders_list, name='orders_list'),
-    path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
-    path('test/', views.test, name='test'),
+    path('', LandingView.as_view(), name='landing'),
+    path('thanks/', ThanksView.as_view(), name='thanks'),
+    path('orders/', OrdersListView.as_view(), name='orders_list'),
+    path('order/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
+    path('services/create/', service_create_view, name='service_create'),
 ]

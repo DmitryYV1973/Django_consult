@@ -1,71 +1,94 @@
-from django.shortcuts import render, redirect
-from .models import Review, Service, Master, Order
-from .forms import ReviewForm, OrderForm
-from .data import *
+from django.views.generic.edit import FormView
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic import TemplateView
+from django.shortcuts import redirect, reverse
+from django.contrib import messages
+from django.http import HttpResponseRedirect, JsonResponse
+from .models import Review, Order, Master, Service
+from .forms import OrderForm, ReviewForm
+from django.db.models import Q
 
+from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
-def landing(request):
-    services = Service.objects.all()
-    masters = Master.objects.filter(is_active=True)
-    published_reviews = Review.objects.filter(is_published=True)
-    success = False  # Флаг для уведомления об успешной отправке
+from django.contrib import messages
 
-    form = ReviewForm()  # Инициализируем форму отзыва
-    order_form = OrderForm()  # Инициализируем форму заказа
+class LandingView(FormView):
+    template_name = 'landing.html'
+    form_class = ReviewForm
+    order_form_class = OrderForm
+    success_url = '/'
 
-    if request.method == "POST":
-        if "submit_review" in request.POST:
-            form = ReviewForm(request.POST, request.FILES)
-            if form.is_valid():
-                review = form.save(commit=False)
-                review.master_id = request.POST.get("master_id")
-                review.is_published = False
-                review.save()
-                return redirect('landing')
-        elif "submit_order" in request.POST:
-            order_form = OrderForm(request.POST)  # Переопределяем форму заказа с данными из POST
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['services'] = Service.objects.all()
+        context['masters'] = Master.objects.filter(is_active=True)
+        context['reviews'] = Review.objects.filter(is_published=True)
+        context['order_form'] = self.order_form_class()
+        context['form'] = self.form_class()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if "submit_order" in request.POST:
+            order_form = self.order_form_class(request.POST)
             if order_form.is_valid():
                 order = order_form.save(commit=False)
                 order.status = 'not_approved'
                 order.save()
                 order_form.save_m2m()
-                success = True  # Устанавливаем флаг в True при успешной отправке
+                return HttpResponseRedirect(reverse_lazy('thanks'))
             else:
-                # Форма невалидна, обрабатываем ошибки
-                pass
+                return self.render_to_response(self.get_context_data(order_form=order_form))
+        elif "submit_review" in request.POST:
+            review_form = self.form_class(request.POST, request.FILES)
+            if review_form.is_valid():
+                review = review_form.save(commit=False)
+                master_id = request.POST.get("master")
+                try:
+                    master = Master.objects.get(pk=master_id)
+                    review.master = master
+                    review.is_published = True  # Устанавливаем флаг публикации
+                    review.save()
+                    messages.success(request, "Ваш отзыв опубликован.")
+                    return redirect('landing')
+                except Master.DoesNotExist:
+                    messages.error(request, "Пожалуйста, выберите мастера для отзыва.")
+                    return self.render_to_response(self.get_context_data(form=review_form))
+            else:
+                return self.render_to_response(self.get_context_data(form=review_form))
 
-    context = {
-        'services': services,
-        'masters': masters,
-        'reviews': published_reviews,
-        'form': form,
-        'order_form': order_form,
-        'success': success,  # Передаем флаг в контекст
-    }
-    return render(request, 'landing.html', context)
+class ThanksView(TemplateView):
+    template_name = 'core/thanks.html'
 
+class OrdersListView(ListView):
+    model = Order
+    template_name = 'core/orders_list.html'
+    context_object_name = 'orders'
+    paginate_by = 10
 
-def thanks(request):
-    return render(request, 'core/thanks.html')
+    def get_queryset(self):
+        queryset = Order.objects.all().order_by('-created_at')
 
+        # Получаем параметры GET-запроса
+        search_text = self.request.GET.get('search_text', '')
+        search_by_client = self.request.GET.get('search_by_client', 'on') == 'on'
+        search_by_phone = self.request.GET.get('search_by_phone', 'off') == 'on'
+        search_by_comment = self.request.GET.get('search_by_comment', 'off') == 'on'
 
-def orders_list(request):
-    context = {
-        'orders': orders
-    }
-    return render(request, 'core/orders_list.html', context)
+        if search_text:
+            q_objects = Q()
+            if search_by_client:
+                q_objects |= Q(client_name__icontains=search_text)
+            if search_by_phone:
+                q_objects |= Q(phone__icontains=search_text)
+            if search_by_comment:
+                q_objects |= Q(comment__icontains=search_text)
+            queryset = queryset.filter(q_objects)
 
+        return queryset
 
-def order_detail(request, order_id):
-    order = next((o for o in orders if o['id'] == order_id), None)
-    master = next((m for m in masters if m['id'] == order['master_id']), None) if order else None
-    
-    context = {
-        'order': order,
-        'master': master
-    }
-    return render(request, 'core/order_detail.html', context)
-
-
-def test(request):
-    return render(request, 'core/test.html', TEST_CONTEXT)
+class OrderDetailView(DetailView):
+    model = Order
+    template_name = 'core/order_detail.html'
+    context_object_name = 'order'

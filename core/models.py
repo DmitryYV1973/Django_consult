@@ -2,24 +2,18 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Service(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Название")
-    description = models.TextField(blank=True, verbose_name="Описание")
-    price = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2, 
-        verbose_name="Цена"
-    )
-    duration = models.PositiveIntegerField(
-        verbose_name="Длительность", 
-        help_text="Время выполнения в минутах"
-    )
+    name = models.CharField(max_length=200, verbose_name="Название услуги")
+    description = models.TextField(verbose_name="Описание")
+    price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Цена")
+    duration = models.PositiveIntegerField(verbose_name="Длительность (мин)")
     is_popular = models.BooleanField(default=False, verbose_name="Популярная услуга")
-    image = models.ImageField(upload_to="services/", blank=True, verbose_name="Изображение")
-
+    image = models.ImageField(upload_to='services/', verbose_name="Изображение")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок отображения")
+    
     class Meta:
         verbose_name = "Услуга"
-        verbose_name_plural = "Услуги"
-        ordering = ['-is_popular', 'name']
+        verbose_name_plural = "Список услуг"
+        ordering = ['order', 'name']
 
     def __str__(self):
         return f"{self.name} - {self.price} руб."
@@ -42,7 +36,7 @@ class Master(models.Model):
 
     class Meta:
         verbose_name = "Мастер"
-        verbose_name_plural = "Мастера"
+        verbose_name_plural = "Список мастеров"
         ordering = ['-is_active', 'name']
 
     def __str__(self):
@@ -52,11 +46,11 @@ class Master(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('not_approved', 'Не подтвержден'),
+        ('not_approved', 'Не подтверждён'),
         ('approved', 'Подтвержден'),
         ('in_progress', 'В работе'),
         ('completed', 'Завершен'),
-        ('canceled', 'Отменен'),
+        ('canceled', 'Отменён'),
     ]
 
     client_name = models.CharField(max_length=100, verbose_name="Имя клиента")
@@ -68,8 +62,8 @@ class Order(models.Model):
         default="not_approved", 
         verbose_name="Статус"
     )
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    date_updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
     master = models.ForeignKey(
         Master, 
         on_delete=models.SET_NULL, 
@@ -91,14 +85,17 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Заказ #{self.id} - {self.client_name}"
+    
+    def get_total_price(self):
+        return sum(service.price for service in self.services.all())
 
 class Review(models.Model):
     RATING_CHOICES = [
-        (1, '1 - Ужасно'),
-        (2, '2 - Плохо'),
-        (3, '3 - Удовлетворительно'),
-        (4, '4 - Хорошо'),
-        (5, '5 - Отлично'),
+        (1, '★☆☆☆☆'),
+        (2, '★★☆☆☆'),
+        (3, '★★★☆☆'),
+        (4, '★★★★☆'),
+        (5, '★★★★★'),
     ]
 
     text = models.TextField(verbose_name="Текст отзыва")
@@ -132,3 +129,6 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Отзыв от {self.client_name} ({self.get_rating_display()})"
+    
+    def get_rating_stars(self):
+        return '★' * self.rating + '☆' * (5 - self.rating)

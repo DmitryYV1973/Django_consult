@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Создание новой услуги{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Создание новой услуги</h2>
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Название услуги</label>
+            <input type="text" class="form-control" id="id_name" name="name" required>
+            <div class="invalid-feedback">Пожалуйста, введите название услуги.</div>
+        </div>
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Описание услуги</label>
+            <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="id_price" class="form-label">Цена</label>
+            <input type="number" step="0.01" min="0" class="form-control" id="id_price" name="price" required>
+            <div class="invalid-feedback">Пожалуйста, введите цену услуги.</div>
+        </div>
+        <div class="mb-3">
+            <label for="id_duration" class="form-label">Продолжительность (в минутах)</label>
+            <input type="number" min="1" class="form-control" id="id_duration" name="duration" required>
+            <div class="invalid-feedback">Пожалуйста, укажите продолжительность услуги.</div>
+        </div>
+        <div class="mb-3">
+            <label for="id_image" class="form-label">Изображение услуги</label>
+            <input type="file" class="form-control" id="id_image" name="image">
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="id_is_popular" name="is_popular">
+            <label class="form-check-label" for="id_is_popular">Популярная услуга?</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Создать услугу</button>
+    </form>
+</div>
+{% endblock %}

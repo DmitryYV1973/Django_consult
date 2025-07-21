@@ -2,12 +2,12 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Service(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Название услуги")
-    description = models.TextField(verbose_name="Описание")
-    price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Цена")
-    duration = models.PositiveIntegerField(verbose_name="Длительность (мин)")
+    name = models.CharField(max_length=200, verbose_name="Название услуги", blank=True, null=True)
+    description = models.TextField(verbose_name="Описание", blank=True, null=True)
+    price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Цена", blank=True, null=True)
+    duration = models.PositiveIntegerField(verbose_name="Длительность (мин)", blank=True, null=True)
     is_popular = models.BooleanField(default=False, verbose_name="Популярная услуга")
-    image = models.ImageField(upload_to='services/', verbose_name="Изображение")
+    image = models.ImageField(upload_to='services/', verbose_name="Изображение", blank=True, null=True)
     order = models.PositiveIntegerField(default=0, verbose_name="Порядок отображения")
     
     class Meta:

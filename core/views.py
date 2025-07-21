@@ -8,6 +8,8 @@ from django.http import HttpResponseRedirect, JsonResponse
 from .models import Review, Order, Master, Service
 from .forms import OrderForm, ReviewForm
 from django.db.models import Q
+from django.views.generic.edit import CreateView
+from .forms import ServiceForm
 
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -92,3 +94,14 @@ class OrderDetailView(DetailView):
     model = Order
     template_name = 'core/order_detail.html'
     context_object_name = 'order'
+    
+class ServiceCreateView(CreateView):
+    model = Service
+    form_class = ServiceForm
+    template_name = 'core/service_create.html'
+    success_url = reverse_lazy('service_created')  # Сюда перенаправляем после успешного создания
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # Тут можно добавить дополнительные действия после успешного сохранения
+        return response
